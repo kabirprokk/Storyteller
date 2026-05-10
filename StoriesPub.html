@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoriesPub - Share Your Stories</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary: #6366f1;
+            --danger: #ef4444;
+            --success: #10b981;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --bg: #ffffff;
+            --text: #111827;
+            --border: #e5e7eb;
+        }
+
+        body.dark-mode {
+            --bg: #0f172a;
+            --text: #f1f5f9;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Buttons */
+        button, .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--gray-50);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Post Card */
+        .post-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            object-fit: cover;
+        }
+
+        .post-content {
+            padding: 1.5rem;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .post-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .post-excerpt {
+            color: var(--gray-600);
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--gray-700);
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.5rem;
+            transition: all 0.3s;
+            color: var(--gray-600);
+        }
+
+        .icon-btn:hover {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .icon-btn.active {
+            color: var(--danger);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        /* Search */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .search-bar input {
+            flex: 1;
+        }
+
+        /* Filter */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            padding-bottom: 0.5rem;
+        }
+
+        .filter-btn {
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-500);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Profile */
+        .profile-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .profile-details h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-bio {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .profile-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .profile-stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        /* Comment */
+        .comment {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-name {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .comment-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .comment-text {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        /* Dark mode toggle */
+        .dark-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .profile-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 1.5rem;
+            }
+
+            .profile-stats {
+                justify-content: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Success message */
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            color: #047857;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Donation card */
+        .donation-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+
+        .donation-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">📖 StoriesPub</div>
+        <div class="nav-right">
+            <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+            <button id="nav-explore" class="btn btn-ghost" onclick="showSection('explore')">Explore</button>
+            <button id="nav-create" class="btn btn-ghost" style="display:none;" onclick="showSection('create')">Create</button>
+            <button id="nav-profile" class="btn btn-ghost" style="display:none;" onclick="showSection('profile')">Profile</button>
+            <button id="auth-btn" class="btn btn-primary" onclick="showSection('login')">Sign In</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h1>Share Your Stories</h1>
+                <p>A modern platform for writers to share stories, poems, quotes, and thoughts</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-lg" onclick="showSection('signup')">Get Started</button>
+                    <button class="btn btn-secondary btn-lg" onclick="showSection('explore')">Explore</button>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✍️</div>
+                    <h3>Create Content</h3>
+                    <p>Write stories, poems, quotes and share your thoughts</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Build Community</h3>
+                    <p>Connect with readers and follow favorite authors</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">❤️</div>
+                    <h3>Support Creators</h3>
+                    <p>Like, comment, and donate to support writers</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login" class="section">
+            <div style="max-width: 400px; margin: 2rem auto;">
+                <div class="card">
+                    <h2>Welcome Back</h2>
+                    <p style="color: var(--gray-500); margin-bottom: 1.5rem;">Log in to your account</p>
+                    
+                    <div id="login-error" class="error" style="display: none; margin-bottom: 1rem;"></div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" placeholder="you@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••">
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">Log In</button>
+
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <p>Don't have an account? <a href="#" onclick="showSection('signup')" style="color: var(--primary); text-decoration: none;">Sign Up</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signup Section -->
+        <section id="signup" class="section">
+            <div style="max-width: 400px; margin: 2rem auto;">
+                <div class="card">
+                    <h2>Create Account</h2>
+                    <p style="color: var(--gray-500); margin-bottom: 1.5rem;">Join our community</p>
+                    
+                    <div id="signup-error" class="error" style="display: none; margin-bottom: 1rem;"></div>
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signup-name" placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signup-email" placeholder="you@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signup-password" placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signup-confirm" placeholder="••••••••">
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;" onclick="handleSignup()">Create Account</button>
+
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <p>Already have an account? <a href="#" onclick="showSection('login')" style="color: var(--primary); text-decoration: none;">Log In</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explore Section -->
+        <section id="explore" class="section">
+            <h2>Explore</h2>
+            <p style="color: var(--gray-500); margin-bottom: 2rem;">Discover stories, poems, and thoughts from our community</p>
+
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search posts, tags, authors..." onkeyup="filterPosts()">
+                <button class="btn btn-primary" onclick="filterPosts()">Search</button>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-btn active" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" onclick="filterByCategory('story')">📖 Stories</button>
+                <button class="filter-btn" onclick="filterByCategory('poem')">✍️ Poems</button>
+                <button class="filter-btn" onclick="filterByCategory('quote')">💬 Quotes</button>
+                <button class="filter-btn" onclick="filterByCategory('thought')">💭 Thoughts</button>
+            </div>
+
+            <div id="posts-container" class="grid"></div>
+        </section>
+
+        <!-- Create Post Section -->
+        <section id="create" class="section">
+            <div style="max-width: 700px; margin: 2rem auto;">
+                <div class="card">
+                    <h2>Create a Post</h2>
+
+                    <div id="create-error" class="error" style="display: none; margin-bottom: 1rem;"></div>
+                    <div id="create-success" class="success" style="display: none; margin-bottom: 1rem;">Post created successfully!</div>
+
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="post-title" placeholder="Enter post title">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="post-type">
+                            <option value="story">Story</option>
+                            <option value="poem">Poem</option>
+                            <option value="quote">Quote</option>
+                            <option value="thought">Thought</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea id="post-content" placeholder="Write your content here..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" id="post-tags" placeholder="adventure, fiction, drama">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="post-published"> Publish immediately
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;" onclick="handleCreatePost()">Create Post</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section">
+            <div id="profile-content"></div>
+        </section>
+
+        <!-- Post Detail Modal -->
+        <div id="post-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title"></h2>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+
+                <div id="modal-body"></div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <h3>Comments</h3>
+                    <div id="comments-container" style="margin: 1rem 0;"></div>
+
+                    <div class="form-group">
+                        <textarea id="comment-text" placeholder="Add a comment..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="handleAddComment()">Post Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 StoriesPub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // State Management
+        const app = {
+            user: null,
+            posts: [],
+            filteredPosts: [],
+            currentCategory: 'all',
+            currentPost: null,
+            darkMode: localStorage.getItem('darkMode') === 'true'
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (app.darkMode) document.body.classList.add('dark-mode');
+            loadMockData();
+            initializeApp();
+        });
+
+        // Mock Data
+        function loadMockData() {
+            const mockPosts = [
+                {
+                    id: 1,
+                    title: 'The Journey Begins',
+                    type: 'story',
+                    author: 'John Doe',
+                    authorInitial: 'JD',
+                    content: 'Once upon a time, in a small village nestled between mountains...',
+                    excerpt: 'A tale of adventure and discovery in a magical world',
+                    tags: ['adventure', 'fantasy'],
+                    likes: 234,
+                    comments: 12,
+                    shares: 8,
+                    views: 1500,
+                    timestamp: new Date(Date.now() - 3600000),
+                    liked: false,
+                    comments_list: [
+                        { author: 'Jane', text: 'Amazing story!', time: '2h ago' },
+                        { author: 'Mike', text: 'Loved the character development', time: '1h ago' }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: 'Whispers of the Night',
+                    type: 'poem',
+                    author: 'Jane Smith',
+                    authorInitial: 'JS',
+                    content: 'In the silence of the night,\nWhere stars dance with light...',
+                    excerpt: 'A poetic journey through the cosmos',
+                    tags: ['poetry', 'nature'],
+                    likes: 456,
+                    comments: 23,
+                    shares: 15,
+                    views: 3200,
+                    timestamp: new Date(Date.now() - 7200000),
+                    liked: false,
+                    comments_list: []
+                },
+                {
+                    id: 3,
+                    title: 'Inspiration Quote',
+                    type: 'quote',
+                    author: 'Tom Brown',
+                    authorInitial: 'TB',
+                    content: 'The only way to do great work is to love what you do.',
+                    excerpt: 'Words of wisdom to inspire your day',
+                    tags: ['motivation', 'success'],
+                    likes: 1200,
+                    comments: 45,
+                    shares: 89,
+                    views: 5600,
+                    timestamp: new Date(Date.now() - 86400000),
+                    liked: false,
+                    comments_list: []
+                },
+                {
+                    id: 4,
+                    title: 'Daily Reflection',
+                    type: 'thought',
+                    author: 'Sarah Lee',
+                    authorInitial: 'SL',
+                    content: 'Today I realized that small moments often carry the greatest meaning...',
+                    excerpt: 'Thoughts on life and personal growth',
+                    tags: ['mindfulness', 'reflection'],
+                    likes: 367,
+                    comments: 18,
+                    shares: 12,
+                    views: 2100,
+                    timestamp: new Date(Date.now() - 3600000),
+                    liked: false,
+                    comments_list: []
+                },
+                {
+                    id: 5,
+                    title: 'The Lost City',
+                    type: 'story',
+                    author: 'Alex Turner',
+                    authorInitial: 'AT',
+                    content: 'Deep in the jungle, hidden for centuries, lay a city of gold...',
+                    excerpt: 'An adventure through time and mystery',
+                    tags: ['mystery', 'adventure'],
+                    likes: 289,
+                    comments: 31,
+                    shares: 27,
+                    views: 2800,
+                    timestamp: new Date(Date.now() - 10800000),
+                    liked: false,
+                    comments_list: []
+                }
+            ];
+
+            app.posts = mockPosts;
+            app.filteredPosts = [...mockPosts];
+        }
+
+        // Auth Functions
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            if (!email || !password) {
+                errorEl.textContent = 'Please fill in all fields';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (!email.includes('@')) {
+                errorEl.textContent = 'Invalid email';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            app.user = { email, name: email.split('@')[0] };
+            updateAuthUI();
+            showSection('explore');
+        }
+
+        function handleSignup() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            const errorEl = document.getElementById('signup-error');
+
+            if (!name || !email || !password || !confirm) {
+                errorEl.textContent = 'Please fill in all fields';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (!email.includes('@')) {
+                errorEl.textContent = 'Invalid email';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirm) {
+                errorEl.textContent = 'Passwords do not match';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorEl.textContent = 'Password must be at least 6 characters';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            app.user = { email, name };
+            updateAuthUI();
+            showSection('explore');
+        }
+
+        function handleLogout() {
+            app.user = null;
+            updateAuthUI();
+            showSection('home');
+        }
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('auth-btn');
+            const createBtn = document.getElementById('nav-create');
+            const profileBtn = document.getElementById('nav-profile');
+
+            if (app.user) {
+                authBtn.textContent = `${app.user.name} (Logout)`;
+                authBtn.onclick = handleLogout;
+                createBtn.style.display = 'inline-block';
+                profileBtn.style.display = 'inline-block';
+            } else {
+                authBtn.textContent = 'Sign In';
+                authBtn.onclick = () => showSection('login');
+                createBtn.style.display = 'none';
+                profileBtn.style.display = 'none';
+            }
+        }
+
+        // Post Functions
+        function handleCreatePost() {
+            if (!app.user) {
+                alert('Please login first');
+                showSection('login');
+                return;
+            }
+
+            const title = document.getElementById('post-title').value;
+            const type = document.getElementById('post-type').value;
+            const content = document.getElementById('post-content').value;
+            const tags = document.getElementById('post-tags').value.split(',').map(t => t.trim());
+            const published = document.getElementById('post-published').checked;
+
+            if (!title || !content) {
+                document.getElementById('create-error').textContent = 'Please fill in all required fields';
+                document.getElementById('create-error').style.display = 'block';
+                return;
+            }
+
+            const newPost = {
+                id: app.posts.length + 1,
+                title,
+                type,
+                content,
+                excerpt: content.substring(0, 100),
+                tags,
+                author: app.user.name,
+                authorInitial: app.user.name.substring(0, 1).toUpperCase(),
+                likes: 0,
+                comments: 0,
+                shares: 0,
+                views: 0,
+                timestamp: new Date(),
+                liked: false,
+                comments_list: []
+            };
+
+            app.posts.unshift(newPost);
+            app.filteredPosts = [...app.posts];
+
+            document.getElementById('create-success').style.display = 'block';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-tags').value = '';
+            document.getElementById('post-published').checked = false;
+
+            setTimeout(() => {
+                document.getElementById('create-error').style.display = 'none';
+                document.getElementById('create-success').style.display = 'none';
+            }, 3000);
+        }
+
+        function filterByCategory(category) {
+            app.currentCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            filterPosts();
+        }
+
+        function filterPosts() {
+            const search = document.getElementById('search-input')?.value.toLowerCase() || '';
+
+            app.filteredPosts = app.posts.filter(post => {
+                const matchCategory = app.currentCategory === 'all' || post.type === app.currentCategory;
+                const matchSearch = !search || 
+                    post.title.toLowerCase().includes(search) ||
+                    post.excerpt.toLowerCase().includes(search) ||
+                    post.tags.some(tag => tag.toLowerCase().includes(search));
+                return matchCategory && matchSearch;
+            });
+
+            renderPosts();
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+
+            if (app.filteredPosts.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <h3>No posts found</h3>
+                            <p>Try adjusting your search or filters</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = app.filteredPosts.map(post => `
+                <div class="post-card">
+                    <div style="height: 150px; background: linear-gradient(135deg, #3b82f6, #6366f1);"></div>
+                    <div class="post-content">
+                        <div class="post-header">
+                            <div class="post-avatar">${post.authorInitial}</div>
+                            <div class="post-meta">
+                                <div class="post-title">${post.author}</div>
+                                <div class="post-time">${formatTime(post.timestamp)}</div>
+                            </div>
+                            <span class="post-type">${post.type}</span>
+                        </div>
+
+                        <h3 style="margin: 1rem 0; font-size: 1.125rem;">${post.title}</h3>
+                        <p class="post-excerpt">${post.excerpt}</p>
+
+                        <div class="post-tags">
+                            ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+
+                        <div class="post-stats">
+                            <div style="display: flex; gap: 1rem;">
+                                <span class="stat">❤️ ${post.likes}</span>
+                                <span class="stat">💬 ${post.comments}</span>
+                                <span class="stat">👁️ ${post.views}</span>
+                            </div>
+                            <div class="post-actions">
+                                <button class="icon-btn ${post.liked ? 'active' : ''}" onclick="toggleLike(${post.id})">❤️</button>
+                                <button class="icon-btn" onclick="openPostModal(${post.id})">💬</button>
+                                <button class="icon-btn" onclick="sharePost(${post.id})">↗️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleLike(postId) {
+            const post = app.posts.find(p => p.id === postId);
+            if (post) {
+                post.liked = !post.liked;
+                post.likes += post.liked ? 1 : -1;
+                renderPosts();
+            }
+        }
+
+        function sharePost(postId) {
+            const post = app.posts.find(p => p.id === postId);
+            if (post) {
+                post.shares += 1;
+                alert(`Shared: "${post.title}"`);
+                renderPosts();
+            }
+        }
+
+        // Modal Functions
+        function openPostModal(postId) {
+            app.currentPost = app.posts.find(p => p.id === postId);
+            if (!app.currentPost) return;
+
+            document.getElementById('modal-title').textContent = app.currentPost.title;
+            document.getElementById('modal-body').innerHTML = `
+                <div>
+                    <p style="color: var(--gray-600); margin-bottom: 1rem;">by <strong>${app.currentPost.author}</strong> • ${formatTime(app.currentPost.timestamp)}</p>
+                    <div style="margin-bottom: 1rem;">
+                        ${app.currentPost.content.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                    <div class="post-stats" style="border: none; padding: 0; margin-top: 1.5rem;">
+                        <div style="display: flex; gap: 1rem;">
+                            <span class="stat">❤️ ${app.currentPost.likes}</span>
+                            <span class="stat">💬 ${app.currentPost.comments}</span>
+                            <span class="stat">👁️ ${app.currentPost.views}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('comments-container').innerHTML = app.currentPost.comments_list.length > 0 
+                ? app.currentPost.comments_list.map(comment => `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-name">${comment.author}</span>
+                            <span class="comment-time">${comment.time}</span>
+                        </div>
+                        <div class="comment-text">${comment.text}</div>
+                    </div>
+                `).join('')
+                : '<p style="color: var(--gray-500);">No comments yet. Be the first!</p>';
+
+            document.getElementById('comment-text').value = '';
+            document.getElementById('post-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('post-modal').classList.remove('active');
+        }
+
+        function handleAddComment() {
+            if (!app.user) {
+                alert('Please login to comment');
+                return;
+            }
+
+            const text = document.getElementById('comment-text').value;
+            if (!text) {
+                alert('Please enter a comment');
+                return;
+            }
+
+            app.currentPost.comments_list.push({
+                author: app.user.name,
+                text,
+                time: 'now'
+            });
+
+            app.currentPost.comments += 1;
+            document.getElementById('comment-text').value = '';
+            openPostModal(app.currentPost.id);
+        }
+
+        // Profile
+        function showProfile() {
+            if (!app.user) {
+                showSection('login');
+                return;
+            }
+
+            const userPosts = app.posts.filter(p => p.author === app.user.name);
+            const totalLikes = userPosts.reduce((sum, p) => sum + p.likes, 0);
+
+            document.getElementById('profile-content').innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <div class="profile-avatar">${app.user.name.substring(0, 1).toUpperCase()}</div>
+                        <div class="profile-details">
+                            <h2>${app.user.name}</h2>
+                            <p class="profile-bio">Writer and storyteller sharing my thoughts with the world</p>
+                            <div class="profile-stats">
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">${userPosts.length}</div>
+                                    <div class="profile-stat-label">Posts</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">${totalLikes}</div>
+                                    <div class="profile-stat-label">Likes</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">124</div>
+                                    <div class="profile-stat-label">Followers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>My Posts</h3>
+                ${userPosts.length > 0 
+                    ? `<div class="grid">${userPosts.map(post => `
+                        <div class="post-card">
+                            <div style="height: 150px; background: linear-gradient(135deg, #3b82f6, #6366f1);"></div>
+                            <div class="post-content">
+                                <h3 style="margin: 0 0 0.5rem 0;">${post.title}</h3>
+                                <p class="post-excerpt">${post.excerpt}</p>
+                                <div class="post-stats" style="border: none; padding: 0; margin-top: 1rem;">
+                                    <div style="display: flex; gap: 1rem;">
+                                        <span class="stat">❤️ ${post.likes}</span>
+                                        <span class="stat">💬 ${post.comments}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}</div>`
+                    : '<p style="color: var(--gray-500);">You haven\'t posted anything yet</p>'
+                }
+
+                <div class="donation-card">
+                    <h3>Support My Work</h3>
+                    <p>Enjoyed my stories? Consider supporting me</p>
+                    <div class="donation-amount">$5 - $100</div>
+                    <button class="btn btn-primary" onclick="handleDonate()">Donate Now</button>
+                </div>
+            `;
+        }
+
+        function handleDonate() {
+            alert(`Thank you for your support of ${app.user?.name}!`);
+        }
+
+        // Utility Functions
+        function formatTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        function toggleDarkMode() {
+            app.darkMode = !app.darkMode;
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', app.darkMode);
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            if (sectionId === 'profile') {
+                showProfile();
+            } else if (sectionId === 'explore') {
+                filterPosts();
+            }
+
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Initial render
+        updateAuthUI();
+        renderPosts();
+    </script>
+</body>
+</html>
